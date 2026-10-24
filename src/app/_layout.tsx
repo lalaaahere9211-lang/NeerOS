@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, router, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from '../theme';
@@ -10,8 +10,26 @@ import { AuthProvider, useAuth } from '../lib/AuthProvider';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { syncService } from '../services/syncService';
 
-function AuthenticatedNavigation() {
+function RootNavigator() {
   const { isDark, colors } = useTheme();
+  const { isLoading: authLoading, session, isCloudEnabled } = useAuth();
+  const segments = useSegments();
+
+  useEffect(() => {
+    if (!isCloudEnabled || authLoading) return;
+
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!session && !inAuthGroup) {
+      router.replace('/(auth)');
+    } else if (session && inAuthGroup) {
+      router.replace('/(tabs)');
+    }
+  }, [session, authLoading, isCloudEnabled, segments]);
+
+  if (authLoading) {
+    return <LoadingView message="Restoring session..." />;
+  }
 
   return (
     <>
@@ -24,6 +42,7 @@ function AuthenticatedNavigation() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="customer/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="customer-new" options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="customer-edit" options={{ presentation: 'modal', headerShown: false }} />
@@ -35,42 +54,6 @@ function AuthenticatedNavigation() {
       </Stack>
     </>
   );
-}
-
-function RootNavigator() {
-  const { isDark, colors } = useTheme();
-  const { isLoading: authLoading, session, isCloudEnabled } = useAuth();
-
-  // If cloud is not configured, skip auth entirely (offline-only mode)
-  if (!isCloudEnabled) {
-    return <AuthenticatedNavigation />;
-  }
-
-  // Show loading while restoring session
-  if (authLoading) {
-    return <LoadingView message="Restoring session..." />;
-  }
-
-  // If no session, show auth screen
-  if (!session) {
-    return (
-      <>
-        <StatusBar style={isDark ? 'light' : 'dark'} />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: colors.background },
-            animation: 'fade',
-          }}
-        >
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack>
-      </>
-    );
-  }
-
-  // Authenticated: show main app
-  return <AuthenticatedNavigation />;
 }
 
 export default function RootLayout() {

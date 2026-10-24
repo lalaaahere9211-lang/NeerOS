@@ -31,35 +31,45 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: t('navHome'),
-          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={typeof color === 'string' ? color : undefined} />
+          ),
         }}
       />
       <Tabs.Screen
         name="customers"
         options={{
           title: t('navCustomers'),
-          tabBarIcon: ({ color, size }) => <Ionicons name="people" size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people" size={size} color={typeof color === 'string' ? color : undefined} />
+          ),
         }}
       />
       <Tabs.Screen
         name="deliveries"
         options={{
           title: t('navDeliveries'),
-          tabBarIcon: ({ color, size }) => <Ionicons name="bicycle" size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="bicycle" size={size} color={typeof color === 'string' ? color : undefined} />
+          ),
         }}
       />
       <Tabs.Screen
         name="inventory"
         options={{
           title: t('navInventory'),
-          tabBarIcon: ({ color, size }) => <Ionicons name="cube" size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="cube" size={size} color={typeof color === 'string' ? color : undefined} />
+          ),
         }}
       />
       <Tabs.Screen
         name="accounts"
         options={{
           title: t('navAccounts'),
-          tabBarIcon: ({ color, size }) => <Ionicons name="wallet" size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="wallet" size={size} color={typeof color === 'string' ? color : undefined} />
+          ),
         }}
       />
     </Tabs>

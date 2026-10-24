@@ -40,12 +40,33 @@ export function getSupabaseClient(): SupabaseClient<Database> {
     );
   }
 
+  const authStorage = {
+    getItem: (key: string) => {
+      if (Platform.OS === 'web' && typeof window === 'undefined') {
+        return Promise.resolve(null);
+      }
+      return AsyncStorage.getItem(key);
+    },
+    setItem: (key: string, value: string) => {
+      if (Platform.OS === 'web' && typeof window === 'undefined') {
+        return Promise.resolve();
+      }
+      return AsyncStorage.setItem(key, value);
+    },
+    removeItem: (key: string) => {
+      if (Platform.OS === 'web' && typeof window === 'undefined') {
+        return Promise.resolve();
+      }
+      return AsyncStorage.removeItem(key);
+    },
+  };
+
   _client = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     auth: {
-      storage: AsyncStorage,
+      storage: authStorage,
       autoRefreshToken: true,
       persistSession: true,
-      detectSessionInUrl: Platform.OS === 'web',
+      detectSessionInUrl: Platform.OS === 'web' && typeof window !== 'undefined',
     },
   });
 

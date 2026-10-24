@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [membership, setMembership] = useState<BusinessMembership | null>(null);
   const [needsEmailVerification, setNeedsEmailVerification] = useState(false);
-  const appStateRef = useRef<AppStateStatus>(AppState.currentState);
+  const appStateRef = useRef<AppStateStatus>((AppState.currentState ?? 'active') as AppStateStatus);
 
   const isCloudEnabled = isSupabaseConfigured();
 

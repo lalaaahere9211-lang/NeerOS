@@ -67,6 +67,8 @@ export default function AuthScreen() {
         const { error: authError } = await signIn(email.trim(), password);
         if (authError) {
           setError(authError.message);
+        } else {
+          router.replace('/(tabs)');
         }
       } else if (mode === 'sign-up') {
         const { error: authError, needsVerification } = await signUp(
